@@ -2,6 +2,7 @@
 Default Python Devcontainer Template
 
 [Python]
+
 Consumer und Producer müssen local auf der Host Maschine ausgeführt werden 
 
 erstelle ein venv für python 
@@ -14,6 +15,7 @@ dann die Packages in der packages.txt installieren
 
 
 [Docker]
+
 docker compose up -d 
 
 

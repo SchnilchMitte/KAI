@@ -35,7 +35,7 @@ consumer = KafkaConsumer(
     bootstrap_servers="localhost:9092",
     auto_offset_reset="latest",
     enable_auto_commit=True,
-    group_id="video-consumers"
+    group_id=None
 )
 
 print("Listening for frames from multiple Kafka topics...")

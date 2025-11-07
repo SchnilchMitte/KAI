@@ -36,4 +36,7 @@ class VideoProducer:
             await self.producer.stop()
         except Exception as e:
             print("Error while disconnecting", e)
+    
+    async def collect_cam_frames():
+        return
         

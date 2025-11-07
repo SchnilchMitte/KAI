@@ -31,9 +31,10 @@ finally:
  
 import cv2
 import time
-from kafka import KafkaProducer
+from aiokafka import AIOKafkaProducer
+import asyncio
 
-producer = KafkaProducer(
+producer = AIOKafkaProducer(
     bootstrap_servers="localhost:9092",
     value_serializer=lambda v: v  # message is already in bytes format 
     #wenn dir ein anderes Format einfällt wie man das ganze performanter senden kann..... 

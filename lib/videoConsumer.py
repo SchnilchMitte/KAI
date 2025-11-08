@@ -32,7 +32,8 @@ class VideoConsumer:
         try:
             async for msg in self.consumer:
                 print("consumed: ", msg.topic, msg.partition, msg.offset, msg.key, msg.value, msg.timestamp)
-                await onFrame(msg) # Callback jede Gruppe kann selber ihre eigene Callback function schreiben entkoppelt von unserer Logik
+                if onFrame:
+                    await onFrame(msg) # Callback jede Gruppe kann selber ihre eigene Callback function schreiben entkoppelt von unserer Logik
         finally:
             # Will leave consumer group; perform autocommit if enabled.
             await self.consumer.stop()

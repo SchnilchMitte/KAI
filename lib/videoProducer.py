@@ -1,5 +1,3 @@
-import cv2
-import time
 from aiokafka import AIOKafkaProducer
 
 class VideoProducer:
@@ -38,6 +36,12 @@ class VideoProducer:
             print('Message sent successfully')
         except Exception as e:
             print(f"Error sending message: {e}")
+            
+    async def send_frame(self, frame_grabber):
+        """Capture a frame from FrameGrabber and send to Kafka"""
+        frame_bytes = frame_grabber.read_frame()
+        if frame_bytes:
+            await self.send_message(frame_bytes)
             
     async def disconnect(self):
         if self._connected and self.producer:

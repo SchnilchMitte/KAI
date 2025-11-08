@@ -1,5 +1,7 @@
 from typing import Callable
 from aiokafka import AIOKafkaConsumer
+import cv2
+import numpy as np
 
 class VideoConsumer:
     def __init__(self, broker:str, topic:str, groupID:str ):
@@ -34,7 +36,29 @@ class VideoConsumer:
         finally:
             # Will leave consumer group; perform autocommit if enabled.
             await self.consumer.stop()
-            
+    
+    async def consume_video(self):
+        """Consume frames from Kafka and display video in OpenCV window."""
+        if not self._connected:
+            await self._connect()
+
+        try:
+            async for msg in self.consumer:
+                frame_bytes = msg.value
+                # Convert bytes to numpy array
+                nparr = np.frombuffer(frame_bytes, np.uint8)
+                frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                if frame is not None:
+                    cv2.imshow("Kafka Video Stream", frame)
+                    # Press 'q' to exit
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        break
+        finally:
+            await self.consumer.stop()
+            self._connected = False
+            cv2.destroyAllWindows()
+            print(f"[Kafka] Disconnected video consumer")
+    
     
     async def disconnect(self):
         if self.consumer and self._connected:

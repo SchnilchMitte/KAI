@@ -27,6 +27,9 @@ services:
       KAFKA_CREATE_TOPICS: "video-stream:1:1"
       KAFKA_LOG_RETENTION_MS: 5000  # keep last 1 min only
       #KAFKA_LOG_SEGMENT_BYTES: 1073741824  # 1 GB segments
+      KAFKA_LOG_SEGMENT_BYTES: 1024000 # smaller segment size dass sie öfter gelöscht werde... Kafka löscht nur volle Segmente
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 1000 # deletion period check 
+
       #KAFKA_MESSAGE_MAX_BYTES: 2000000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

@@ -1,3 +1,4 @@
 aiokafka
 numpy
 opencv-python
+lz4

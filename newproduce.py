@@ -27,7 +27,7 @@ from lib import VideoProducer
 from lib import FrameGrabber  # make sure FrameGrabber is in lib too
 
 async def main():
-    broker = "localhost:9092"
+    broker = "152.53.32.66:9092"
     topic = "video-stream"
     myid = str(uuid.uuid4())
 
@@ -38,8 +38,8 @@ async def main():
     try:
         while True:
             # Capture a frame and send to Kafka
-            await producer.send_frame(grabber)
-            await asyncio.sleep(0.01)  # ~100 FPS max
+            await producer.send_frame(grabber,30)
+            #await asyncio.sleep(0.01)  # ~100 FPS max move this to lib abstraction layer
     except KeyboardInterrupt:
         print("Stopping video stream...")
     finally:

@@ -37,8 +37,8 @@ async def handle_frame(msg):
         print("Failed to decode frame")
 
 async def main():
-    consumer_id = str(uuid.uuid4())  # unique group id per consumer
-    consumer = VideoConsumer("localhost:9092", "video-stream", consumer_id)
+    consumer_id = str(uuid.uuid4())  # unique group id per consumer #TODO remove this when id is set to None there wont be groups and everyone gets all frames bc groups are ignored
+    consumer = VideoConsumer("152.53.32.66:9092", "video-stream", consumer_id)
     
     try:
         await consumer.consume(handle_frame)

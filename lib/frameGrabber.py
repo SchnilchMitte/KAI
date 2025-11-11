@@ -1,4 +1,5 @@
 import cv2
+import asyncio
 
 class FrameGrabber:
     def __init__(self, device=0, width=640, height=480, jpeg_quality=80):

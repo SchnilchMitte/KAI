@@ -1,5 +1,5 @@
 from aiokafka import AIOKafkaProducer
-
+import asyncio
 class VideoProducer:
     def __init__(self, broker:str, topic:str, service_name:str):
         self.broker = broker
@@ -32,16 +32,17 @@ class VideoProducer:
         if not self._connected:
             await self._connect()    
         try:
-            await self.producer.send_and_wait(self.topic, data)
+            await self.producer.send(self.topic, data)
             print('Message sent successfully')
         except Exception as e:
             print(f"Error sending message: {e}")
             
-    async def send_frame(self, frame_grabber):
+    async def send_frame(self, frame_grabber, fps=30):
         """Capture a frame from FrameGrabber and send to Kafka"""
         frame_bytes = frame_grabber.read_frame()
         if frame_bytes:
             await self.send_message(frame_bytes)
+            await asyncio.sleep(1.0/fps)
             
     async def disconnect(self):
         if self._connected and self.producer:

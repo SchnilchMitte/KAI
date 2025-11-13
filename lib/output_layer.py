@@ -1,5 +1,6 @@
 from dataclasses import dataclass, asdict
-from typing import Callable
+import time
+from typing import Any, Callable
 import json
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 
@@ -11,10 +12,17 @@ class InvalidMetadataError(Exception):
 
 @dataclass
 class OutputLayerMetadata:
-    source_name: str
-    frame_id: str
-    service: str
-    timestamp_producer: str
+    """ source_id = The sensor, for example camera1, microphone1...
+        service_id = The service which processed the data e.g. Gaze Detection etc.
+        time_stamp = The Timestamp when the sensor input got created
+        completed_at = The Timestamp when the service finished processing the data
+        result = Result from the Service
+    """
+
+    source_id: str
+    service_id: str
+    time_stamp: str
+    completed_at: str
     result: dict
 
     def to_dict(self):
@@ -43,11 +51,11 @@ class OutputLayerProducer:
             return f"output.{metadata.source_name}.{metadata.service}"
         raise InvalidMetadataError("Source name and service needs to be declared to build a topic!")
 
-    async def sendMetadata(self, metadata: OutputLayerMetadata):
+    async def sendMetadata(self, header, result, service_id : str):
         """Send serialized metadata to Kafka"""
         if not self._connected:
             await self._connect()
-
+        metadata = self._map_header_to_output_layer_metadata(header, result, service_id)
         try:
             topic = self._build_topic(metadata)
             data = metadata.to_dict()
@@ -55,6 +63,25 @@ class OutputLayerProducer:
             print(f"[SmartInteraction] Sent metadata to topic '{topic}' (frame_id={metadata.frame_id})")
         except Exception as e:
             print(f"[SmartInteraction] Error sending metadata: {e}")
+
+
+    def _map_header_to_output_layer_metadata(self, header: dict[str, Any], result, service_id) -> OutputLayerMetadata:
+        required_keys = ["time_stamp", "source_id"]
+
+        missing = [key for key in required_keys if key not in header]
+        if missing:
+            raise KeyError(f"Missing required header fields: {missing}")
+
+        metadata = OutputLayerMetadata(
+            time_stamp=header["time_stamp"],
+            service_id=service_id,
+            source_id=header["source_id"],
+            result=result,
+            completed_at=int(time.time())
+        )
+
+        return metadata
+
 
     async def disconnect(self):
         if self._connected:

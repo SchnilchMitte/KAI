@@ -17,9 +17,9 @@ async def receive_loop():
 async def send_once():
     producer = OutputLayerProducer()
     metadata = OutputLayerMetadata(
-        source_name="camera1",
-        frame_id="42",
-        service="object_detection",
+        source_name="sensor1",
+        frame_id="34",
+        service="matteo_test_service",
         timestamp_producer=datetime.utcnow().isoformat(),
         result={"status": "ok", "objects": ["car", "person"]}
     )

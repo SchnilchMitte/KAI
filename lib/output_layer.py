@@ -20,7 +20,7 @@ class OutputLayerMetadata:
 
 
 class OutputLayerProducer:
-    def __init__(self, broker: str = "152.53.32.66:9093"):
+    def __init__(self, broker: str = "152.53.32.66:9094"):
         self.broker = broker
         self._connected = False
         self.producer = AIOKafkaProducer(
@@ -43,6 +43,7 @@ class OutputLayerProducer:
 
     async def sendMetadata(self, metadata: OutputLayerMetadata):
         """Send serialized metadata to Kafka"""
+        #print(metadata.to_dict())
         if not self._connected:
             await self._connect()
 
@@ -62,7 +63,7 @@ class OutputLayerProducer:
 
 
 class OutputLayerReceiver:
-    def __init__(self, broker: str = "152.53.32.66:9093", group_id: str = None):
+    def __init__(self, broker: str = "152.53.32.66:9094", group_id: str = None):
         self.broker = broker
         self.group_id = group_id
         self.consumer = None

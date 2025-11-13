@@ -1,8 +1,8 @@
-from .videoConsumer import VideoConsumer
-from .videoProducer import VideoProducer
-from .frameGrabber import FrameGrabber
+from .video_consumer import VideoConsumer
+from .video_producer import VideoProducer
+from .frame_grabber import FrameGrabber
 from .output_layer import OutputLayerMetadata, OutputLayerProducer, OutputLayerReceiver
-from .InputLayer import InputLayerMetadata, KAIProducer, KAIConsumer, KAIConsumerThread
+from .input_layer import InputLayerMetadata, KAIProducer, KAIConsumer, KAIConsumerThread
 __all__ = [
     "VideoProducer",
     "VideoConsumer",

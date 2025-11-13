@@ -31,10 +31,9 @@ finally:
  
 import cv2
 import time
-from aiokafka import AIOKafkaProducer
-import asyncio
+from kafka import KafkaProducer
 
-producer = AIOKafkaProducer(
+producer = KafkaProducer(
     bootstrap_servers="localhost:9092",
     value_serializer=lambda v: v  # message is already in bytes format 
     #wenn dir ein anderes Format einfällt wie man das ganze performanter senden kann..... 
@@ -52,7 +51,7 @@ if not cap.isOpened():
 #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frameHeight) 
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-fps = cap.get(cv2.CAP_PROP_FPS)  # Might be 0 or approximate depending on camera
+fps = cap.get(cv2.CAP_PROP_FPS)  
 
 print(f"Camera resolution: {width}x{height}, FPS: {fps}")
 

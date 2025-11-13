@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 from flask import Flask, render_template_string, jsonify
 
-from lib.output_layer import OutputLayerReceiver, OutputLayerMetadata
+from output_layer import OutputLayerReceiver, OutputLayerMetadata
 
 
 class OutputLayerMonitor:
@@ -65,11 +65,8 @@ class OutputLayerMonitor:
         receiver = OutputLayerReceiver(broker=self.broker, group_id="monitor-ui")
 
         try:
-            await receiver.receiveMetadata(
-                self.source_name,
-                self.service,
-                self._msg_callback
-            )
+            
+            await receiver.receiveAllMetadata(self._msg_callback)
         finally:
             await receiver.disconnect()
 

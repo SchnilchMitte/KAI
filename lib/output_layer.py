@@ -3,9 +3,11 @@ from typing import Callable
 import json
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 
+
 class InvalidMetadataError(Exception):
     """Is being thrown if Metadata is missing or corrupt."""
     pass
+
 
 @dataclass
 class OutputLayerMetadata:
@@ -43,7 +45,6 @@ class OutputLayerProducer:
 
     async def sendMetadata(self, metadata: OutputLayerMetadata):
         """Send serialized metadata to Kafka"""
-        #print(metadata.to_dict())
         if not self._connected:
             await self._connect()
 
@@ -72,6 +73,7 @@ class OutputLayerReceiver:
     async def _connect(self, topic: str):
         if self._connected:
             return
+
         self.consumer = AIOKafkaConsumer(
             topic,
             bootstrap_servers=self.broker,
@@ -85,8 +87,9 @@ class OutputLayerReceiver:
         print(f"[SmartInteraction] Connected OutputLayerReceiver to topic '{topic}'")
 
     async def receiveMetadata(self, source_name: str, service: str, onMetadata: Callable):
-        """Consume metadata messages and call callback"""
+        """Consume metadata messages and call callback (single-topic mode)"""
         topic = f"output.{source_name}.{service}"
+
         if not self._connected:
             await self._connect(topic)
 
@@ -104,6 +107,48 @@ class OutputLayerReceiver:
             await self.consumer.stop()
             self._connected = False
             print(f"[SmartInteraction] Disconnected OutputLayerReceiver from topic '{topic}'")
+
+
+    async def _connect_pattern(self, pattern: str):
+        """Connect using a Kafka topic regex pattern."""
+        if self._connected:
+            return
+
+        self.consumer = AIOKafkaConsumer(
+            bootstrap_servers=self.broker,
+            group_id=self.group_id,
+            auto_offset_reset="latest",
+            enable_auto_commit=True,
+            value_deserializer=lambda v: json.loads(v.decode("utf-8"))
+        )
+
+        self.consumer.subscribe(pattern=pattern)
+
+        await self.consumer.start()
+        self._connected = True
+        print(f"[SmartInteraction] Connected OutputLayerReceiver with pattern '{pattern}'")
+
+    async def receiveAllMetadata(self, onMetadata: Callable):
+        """Consume metadata from all topics matching output.*.*"""
+        pattern = r"output\..*\..*"
+
+        if not self._connected:
+            await self._connect_pattern(pattern)
+
+        try:
+            async for msg in self.consumer:
+                print(f"[SmartInteraction] Consumed message from '{msg.topic}' offset {msg.offset}")
+                metadata_dict = msg.value
+                try:
+                    metadata = OutputLayerMetadata(**metadata_dict)
+                    if onMetadata:
+                        await onMetadata(metadata)
+                except Exception as e:
+                    print(f"[SmartInteraction] Error parsing metadata: {e}")
+        finally:
+            await self.consumer.stop()
+            self._connected = False
+            print("[SmartInteraction] Disconnected OutputLayerReceiver (pattern mode)")
 
     async def disconnect(self):
         if self.consumer and self._connected:

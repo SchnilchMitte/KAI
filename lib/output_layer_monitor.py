@@ -62,7 +62,7 @@ class OutputLayerMonitor:
         self.received_messages.append(metadata)
 
     async def _receiver_loop(self):
-        receiver = OutputLayerReceiver(broker=self.broker, group_id="monitor-ui")
+        receiver = OutputLayerReceiver(broker=self.broker, group_id=None)
 
         try:
             

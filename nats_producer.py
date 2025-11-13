@@ -12,7 +12,7 @@ async def main():
     
     
     producer = KAIProducer(broker=broker,topic=topic,service_name=myid )
-    grabber = FrameGrabber(device=0, width=1920, height=1080, jpeg_quality=80)
+    grabber = FrameGrabber(device=0, width=1920, height=1080, jpeg_quality=40)
     await producer.connect() # you dont need to explicitly connect but its available
     try:
         while True:

@@ -1,4 +1,5 @@
 aiokafka
 numpy
 opencv-python
-lz4
+cramjam
+nats-py

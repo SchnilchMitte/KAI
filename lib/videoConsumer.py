@@ -7,8 +7,7 @@ class VideoConsumer:
     def __init__(self, broker:str, topic:str, groupID:str ):
         self.broker= broker
         self.topic= topic
-        self.groupID= groupID
-        self._connected= None
+        self._connected= False
         
         self.consumer= AIOKafkaConsumer(
             self.topic,

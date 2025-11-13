@@ -3,7 +3,7 @@ import asyncio
 import cv2
 import numpy as np
 import nats
-from lib.InputLayer import KAIConsumerThread
+from lib.input_layer import KAIConsumerThread
 
 async def main():
     
@@ -29,7 +29,7 @@ async def main():
         cv2.imshow(msg.subject, frame)
         cv2.waitKey(1)
 
-    consumer.onMessage(handle_frame)
+    consumer.on_message(handle_frame)
     await consumer.connect()
     await consumer.consume_video()
 

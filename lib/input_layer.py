@@ -178,7 +178,7 @@ class KAIConsumerThread:
         except Exception as e:
             print("[Consumer] Error connecting:", e)
 
-    def onMessage(self, callback: Callable):
+    def on_message(self, callback: Callable):
         """
         Register a user-defined function that will receive the newest frame.
         The function is executed in its own background thread.

@@ -4,10 +4,11 @@ import cv2
 import numpy as np
 
 class VideoConsumer:
-    def __init__(self, broker:str, topic:str, groupID:str ):
+    def __init__(self, broker:str, topic:str, groupID:str):
         self.broker= broker
         self.topic= topic
-        self._connected= False
+        self.groupID= groupID
+        self._connected= None
         
         self.consumer= AIOKafkaConsumer(
             self.topic,

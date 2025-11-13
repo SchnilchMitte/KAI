@@ -3,14 +3,14 @@ import asyncio
 import cv2
 import numpy as np
 import nats
-from lib.input_layer import KAIConsumerThread
+from lib.input_layer import InputLayerConsumerThread
 
 async def main():
     
     broker = "152.53.32.66:4222"
     topic = "cams.cam1"
     
-    consumer = KAIConsumerThread(topic=topic, broker=broker)
+    consumer = InputLayerConsumerThread(topic=topic, broker=broker)
 
     def handle_frame(msg, frames):
         

@@ -205,16 +205,16 @@ class OutputLayerMonitor:
 <h2>Empfangene Metadaten</h2>
 
 <table id="msg_table">
-    <thead>
-        <tr>
-            <th>Source</th>
-            <th>Service</th>
-            <th>Frame ID</th>
-            <th>Timestamp</th>
-            <th>Size</th>
-            <th>Result</th>
-        </tr>
-    </thead>
+        <thead>
+            <tr>
+                <th>Source</th>
+                <th>Service</th>
+                <th>Timestamp (input)</th>
+                <th>Completed at</th>
+                <th>Size</th>
+                <th>Result</th>
+            </tr>
+        </thead>
     <tbody></tbody>
 </table>
 
@@ -257,16 +257,17 @@ async function refreshTable() {
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${m.source_name}</td>
-            <td>${m.service}</td>
-            <td>${m.frame_id}</td>
-            <td>${m.timestamp_producer}</td>
+            <td>${m.source_id}</td>
+            <td>${m.service_id}</td>
+            <td>${m.time_stamp}</td>
+            <td>${m.completed_at}</td>
             <td>${m.byte_size} B</td>
             <td><button onclick="openPopup(decodeURIComponent('${jsonText}'))">View</button></td>
         `;
         body.appendChild(tr);
     });
 }
+
 
 
 

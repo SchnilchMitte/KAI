@@ -1,6 +1,7 @@
 from dataclasses import dataclass, asdict
 import asyncio
 import threading
+import time
 import nats
 from lib import FrameGrabber
 import numpy as np
@@ -21,13 +22,13 @@ class InputLayerMetadata:
     
     
 
-class KAIProducer:
-    def __init__(self, topic:str, service_name:str, broker:str = "152.53.32.66:4222"):
+class InputLayerProducer:
+    def __init__(self, topic:str, source_name:str, broker:str = "152.53.32.66:4222"):
         self.broker = broker
         self.topic = topic
         self._connected= False
         self.producer = None
-        self.id= service_name
+        self.id= source_name
         
     async def connect(self):
         if self._connected:
@@ -55,7 +56,7 @@ class KAIProducer:
         frame_bytes = frame_grabber.read_frame()
         if frame_bytes:
             metadata = InputLayerMetadata(
-                frame_time_stamp="now12313",
+                time_stamp=int(time.time()),
                 source_id=self.id,
                 encoding="jpeg",
                 width=frame_grabber.width,
@@ -82,8 +83,8 @@ class KAIProducer:
 
 
 
-class KAIConsumer:
-    def __init__(self, broker:str, topic:str):
+class InputLayerConsumer:
+    def __init__(self, topic:str, broker:str= "152.53.32.66:4222"):
         self.broker= broker
         self.topic= topic
         self._connected= False
@@ -144,14 +145,14 @@ class KAIConsumer:
 
 
  
-class KAIConsumerThread:
+class InputLayerConsumerThread:
     """
     Async NATS consumer that hands off frames to lightweight background threads.
     - A display thread shows the newest frame (minimal latency)
     - An optional user callback thread processes each newest frame
     """
 
-    def __init__(self, broker: str, topic: str):
+    def __init__(self, topic:str, broker:str= "152.53.32.66:4222"):
         self.broker = broker
         self.topic = topic
         self._connected = False

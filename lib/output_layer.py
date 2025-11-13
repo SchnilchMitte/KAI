@@ -35,10 +35,19 @@ class OutputLayerProducer:
         self._connected = False
         self.producer = AIOKafkaProducer(
             bootstrap_servers=self.broker,
-            value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+            value_serializer=self._smart_serializer,
             compression_type="lz4",
             acks=0
         )
+
+    def _smart_serializer(self, v):
+        if isinstance(v, dict):
+            return json.dumps(v).encode("utf-8")
+
+        if isinstance(v, str):
+            return v.encode("utf-8")
+
+        return json.dumps(v).encode("utf-8")
 
     async def _connect(self):
         if not self._connected:
@@ -47,20 +56,21 @@ class OutputLayerProducer:
             print(f"[SmartInteraction] Connected OutputLayerProducer to {self.broker}")
 
     def _build_topic(self, metadata: OutputLayerMetadata) -> str:
-        if metadata.source_name and metadata.service:
-            return f"output.{metadata.source_name}.{metadata.service}"
+        if metadata.source_id and metadata.service_id:
+            return f"output.{metadata.source_id}.{metadata.service_id}"
         raise InvalidMetadataError("Source name and service needs to be declared to build a topic!")
 
     async def sendMetadata(self, header, result, service_id : str):
         """Send serialized metadata to Kafka"""
         if not self._connected:
             await self._connect()
+
         metadata = self._map_header_to_output_layer_metadata(header, result, service_id)
         try:
             topic = self._build_topic(metadata)
             data = metadata.to_dict()
             await self.producer.send(topic, data)
-            print(f"[SmartInteraction] Sent metadata to topic '{topic}' (frame_id={metadata.frame_id})")
+            print(f"[SmartInteraction] Sent metadata to topic '{topic}' (result={metadata.result})")
         except Exception as e:
             print(f"[SmartInteraction] Error sending metadata: {e}")
 

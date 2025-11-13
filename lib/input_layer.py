@@ -1,7 +1,6 @@
 from dataclasses import dataclass, asdict
 import asyncio
 import threading
-import time
 import nats
 from lib import FrameGrabber
 import numpy as np
@@ -11,8 +10,8 @@ import threading
 
 @dataclass
 class InputLayerMetadata:
-    frame_time_stamp:str
-    cam_id:str
+    time_stamp:str
+    source_id:str
     encoding:str
     width:int
     height:int
@@ -57,7 +56,7 @@ class KAIProducer:
         if frame_bytes:
             metadata = InputLayerMetadata(
                 frame_time_stamp="now12313",
-                cam_id=self.id,
+                source_id=self.id,
                 encoding="jpeg",
                 width=frame_grabber.width,
                 height=frame_grabber.height
